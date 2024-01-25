@@ -6,3 +6,9 @@ This countdown displays the our left until the next Coffe time at work.
 
 At coffe time the alarm starts.
 
+
+
+Check you have the necesary packages installed:
+
+pip install pygame colorama
+pip install datetime
