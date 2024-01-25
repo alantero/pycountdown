@@ -10,5 +10,5 @@ At coffe time the alarm starts.
 
 Check you have the necesary packages installed:
 
-pip install pygame colorama
-pip install datetime
+- pip install pygame colorama
+- pip install datetime
