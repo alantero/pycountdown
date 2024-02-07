@@ -18,7 +18,7 @@ beep_sound = pygame.mixer.Sound("Nuclear_Alarm.mp3")  # Asegúrate de tener un a
 BEEP_EVENT = pygame.USEREVENT + 1
 
 
-COFFE_TIME = 40#/60 #mins
+COFFE_TIME = 40 #mins
 ALARM_TIME = 20000 #ms
 
 # Fuente para los números
@@ -111,12 +111,21 @@ def get_time_left(target_hour,minute=0,second=0,microsecond=0):
     if now >= target:
         #target = target.replace(day=target.day + 1)
         #target = target.replace(day=+ 1)
-
-        desplazamiento = timedelta(days=TIME_RESET["d"], hours=TIME_RESET["h"], minutes=TIME_RESET["m"], seconds=TIME_RESET["s"], microseconds=TIME_RESET["ms"])
+        weekday = now.weekday()
+        if weekday == 4:
+            desplazamiento = timedelta(days=3, hours=TIME_RESET["h"], minutes=TIME_RESET["m"], seconds=TIME_RESET["s"], microseconds=TIME_RESET["ms"])
+        elif weekday == 5:
+            desplazamiento = timedelta(days=2, hours=TIME_RESET["h"], minutes=TIME_RESET["m"], seconds=TIME_RESET["s"], microseconds=TIME_RESET["ms"])
+        #elif weekday ==6:
+        #    desplazamiento = timedelta(days=1, hours=TIME_RESET["h"], minutes=TIME_RESET["m"], seconds=TIME_RESET["s"], microseconds=TIME_RESET["ms"])
+        else:
+            desplazamiento = timedelta(days=TIME_RESET["d"], hours=TIME_RESET["h"], minutes=TIME_RESET["m"], seconds=TIME_RESET["s"], microseconds=TIME_RESET["ms"])
         target += desplazamiento
 
     time_left = target - now
     return time_left, target
+
+
 
 
 ### Execute code
@@ -135,9 +144,12 @@ h, m, s, ms = 11, 0, 0, 0
 
 blink_start = datetime.now().replace(hour=h, minute=m, second=s, microsecond=ms)
 
-#if blink_start - datetime.now() < 0:
-#    blink_start +=  deltatime(days=1)
+# Si la hora actual ya ha pasado la hora del café, ajusta blink_start para el día siguiente
+if now >= blink_start:
+    desplazamiento = timedelta(days=TIME_RESET["d"], hours=TIME_RESET["h"], minutes=TIME_RESET["m"], seconds=TIME_RESET["s"], microseconds=TIME_RESET["ms"])
+    blink_start += desplazamiento
 
+#print(blink_start)
 
 
 beeped = False
@@ -146,21 +158,7 @@ running = True
 
 
 
-
 while running:
-
-    #now = datetime.now()
-
-    # Lógica para determinar si estamos en el periodo de "Coffee Time!"
-    #if blink_start <= now < blink_start + timedelta(minutes=COFFE_TIME):
-    #    if not beeped:
-    #        # Activar alarma, mostrar mensaje, etc.
-    #        continue
-    #else:
-    #    # Si no estamos en el periodo, y beeped es True, entonces lo reseteamos
-    #    if beeped:
-    #        beeped = False
-    #        blink_start = datetime.now().replace(hour=h, minute=m, second=s, microsecond=ms)
 
 
     time_left, target = get_time_left(h, minute=m, second=s, microsecond=ms)
@@ -182,9 +180,22 @@ while running:
         #alarm_time = now + timedelta(seconds=10)
         # Desglosa la hora en horas, minutos, segundos y milisegundos
         #h, m, s, ms = alarm_time.hour, alarm_time.minute, alarm_time.second, alarm_time.microsecond // 1000
+
         h, m, s, ms = 11, 0, 0, 0
-        blink_start = datetime.now().replace(hour=h, minute=m, second=s, microsecond=ms)
+        #blink_start = datetime.now().replace(hour=h, minute=m, second=s, microsecond=ms)
+
+        desplazamiento = timedelta(days=TIME_RESET["d"], hours=TIME_RESET["h"], minutes=TIME_RESET["m"], seconds=TIME_RESET["s"], microseconds=TIME_RESET["ms"])
+
+
+        #now = datetime.now()
+        #next_alarm = now + desplazamiento  # Calcula el momento exacto para la próxima alarma
+        #blink_start = next_alarm.replace(hour=h, minute=m, second=s, microsecond=ms*1000)  # Ajustar para la hora específica del café
+        
+        blink_start += desplazamiento
+        #print(blink_start)
+        
         beeped = False
+        reset = False
 
 
 
