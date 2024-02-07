@@ -1,6 +1,8 @@
 import pygame
 import time
 from datetime import datetime, timedelta
+import pandas as pd
+
 
 # Inicializar pygame
 pygame.init()
@@ -127,6 +129,55 @@ def get_time_left(target_hour,minute=0,second=0,microsecond=0):
 
 
 
+def holiday_countdown(df):
+
+
+    # Current date
+    current_date = datetime.now()
+
+    # Convert 'Start Date' to datetime format
+    df['Start Date'] = pd.to_datetime(df['Start Date'], format='%m/%d/%Y')
+
+    # Filter rows where the 'Start Date' is in the future
+    future_holidays = df[df['Start Date'] > current_date]
+
+    # Find the nearest future holiday
+    next_holiday = future_holidays['Start Date'].min()
+
+    # Calculate the number of days until the next holiday
+    days_until_next_holiday = (next_holiday - current_date).days
+
+    # Extract the corresponding holiday name
+    next_holiday_name = future_holidays[future_holidays['Start Date'] == next_holiday]['Subject'].iloc[0]
+
+    #print(days_until_next_holiday, next_holiday_name)
+
+    return days_until_next_holiday, next_holiday_name
+
+
+
+def render_holiday_countdown(days_until_next_holiday, next_holiday_name):
+    # Use a smaller font size for the holiday countdown
+    holiday_font_size = 30
+    holiday_font = pygame.font.Font(None, holiday_font_size)
+
+    # Prepare the text
+    holiday_text = f"{next_holiday_name}: Quedan {days_until_next_holiday} dias"
+    holiday_surface = holiday_font.render(holiday_text, True, COLORS["green"])#(255, 255, 255))  # White color
+
+    print(holiday_text)
+    # Position the text on the screen (adjust according to your layout)
+    
+    text_rect = (130, screen_height - 200)#holiday_surface.get_rect(center=(screen_width // 2, screen_height // 2))
+    screen.blit(holiday_surface,text_rect)# (10, screen_height - 60))
+
+
+
+
+
+df = pd.read_csv("calendario_laboral_cantabria.csv", on_bad_lines='skip')
+
+
 
 ### Execute code
 
@@ -198,6 +249,10 @@ while running:
         reset = False
 
 
+
+    days_until_next_holiday, next_holiday_name = holiday_countdown(df)
+    render_holiday_countdown(days_until_next_holiday, next_holiday_name)
+    pygame.display.update()  # Make sure this is after the call to render the holiday countdown
 
     clock.tick(1)
 
