@@ -9,14 +9,19 @@ pygame.init()
 
 # Configuraciones de la ventana
 screen_width, screen_height = 800, 600
-screen = pygame.display.set_mode((screen_width, screen_height), pygame.FULLSCREEN)
+
+#info = pygame.display.Info()
+#screen_width = info.current_w
+#screen_height = info.current_h
+
+screen = pygame.display.set_mode((screen_width, screen_height))#, pygame.FULLSCREEN)
 pygame.display.set_caption("Cuenta Regresiva")
 
 # Configuraciones del reloj y sonido
 clock = pygame.time.Clock()
 pygame.mixer.init()
 #beep_sound = pygame.mixer.Sound("beep.wav")  # Asegúrate de tener un archivo beep.wav en el mismo directorio
-beep_sound = pygame.mixer.Sound("Nuclear_Alarm.mp3")  # Asegúrate de tener un archivo beep.wav en el mismo directorio
+beep_sound = pygame.mixer.Sound("Nuclear_Alarm_scaled.mp3")  # Asegúrate de tener un archivo beep.wav en el mismo directorio
 BEEP_EVENT = pygame.USEREVENT + 1
 
 
@@ -165,7 +170,7 @@ def render_holiday_countdown(days_until_next_holiday, next_holiday_name):
     holiday_text = f"{next_holiday_name}: Quedan {days_until_next_holiday} dias"
     holiday_surface = holiday_font.render(holiday_text, True, COLORS["green"])#(255, 255, 255))  # White color
 
-    print(holiday_text)
+    #print(holiday_text)
     # Position the text on the screen (adjust according to your layout)
     
     text_rect = (130, screen_height - 200)#holiday_surface.get_rect(center=(screen_width // 2, screen_height // 2))
@@ -175,7 +180,7 @@ def render_holiday_countdown(days_until_next_holiday, next_holiday_name):
 
 
 
-df = pd.read_csv("calendario_laboral_cantabria.csv", on_bad_lines='skip')
+df = pd.read_csv("calendario_laboral_cantabria_updated.csv", on_bad_lines='skip', comment="#")
 
 
 
@@ -207,7 +212,7 @@ beeped = False
 
 running = True
 
-
+fullscreen = False
 
 while running:
 
@@ -216,7 +221,16 @@ while running:
 
     for event in pygame.event.get():
         if event.type == pygame.QUIT or (event.type == pygame.KEYDOWN and event.key is pygame.K_ESCAPE):
+            pygame.quit()
             running = False
+            exit() 
+        elif event.type == pygame.KEYDOWN:
+            if event.key == pygame.K_9:
+                fullscreen = not fullscreen
+                if fullscreen:
+                    screen = pygame.display.set_mode((screen_width, screen_height), pygame.FULLSCREEN)
+                else:
+                    screen = pygame.display.set_mode((screen_width, screen_height))
         elif event.type == BEEP_EVENT:
             beep_sound.stop()
             pygame.time.set_timer(BEEP_EVENT, 0)  # Desactivar el temporizador
