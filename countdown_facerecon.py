@@ -199,7 +199,7 @@ def render_custom_message(message, font_size = font_size):
 
 
 ### Calendario laboral
-df = pd.read_csv("calendario_laboral_cantabria_updated.csv", on_bad_lines='skip', comment="#")
+df = pd.read_csv("calendario_laboral_cantabria.csv", on_bad_lines='skip', comment="#")
 
 
 
